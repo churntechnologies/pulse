@@ -1,7 +1,7 @@
 {
   "name": "pulse",
-  "version": "0.3.0",
-  "description": "A slim band above the prompt: session cost, spend rate and budget, running time, warm or cold prompt cache, context fill and low usage limits, with Pip and a details pane.",
+  "version": "0.4.0",
+  "description": "A slim band above the prompt: session cost, spend rate and budget, running time, warm or cold prompt cache, context fill and low usage limits, with Pip.",
   "author": {
     "name": "Nemat"
   },

@@ -10,19 +10,12 @@ const PROPS = {
   scroll: { offset: 0, bodyRows: 4 },
   view: {},
 } as const
-const PANE = {
-  plugin: 'pulse',
-  component: 'Pane',
-  requestId: 'pulse',
-  surface: 'desktop',
-  props: { title: 'Pulse', isFocused: false, bodyColumns: 60, placement: 'dock', scroll: { offset: 0, bodyRows: 40 }, view: {} },
-} as const
 const SUBSCRIPTION = [
   { kind: 'five_hour', percentUsed: 88, resetsAt: '2098-12-31T23:40:00Z' },
   { kind: 'seven_day', percentUsed: 50 },
 ]
 
-type Setup = { rateLimits?: unknown[]; percent?: number; toasts?: string[]; opened?: string[] }
+type Setup = { rateLimits?: unknown[]; percent?: number; toasts?: string[] }
 
 const start = async ($: any, on: any, s: Setup = {}) => {
   mock.store(on)
@@ -36,7 +29,6 @@ const start = async ($: any, on: any, s: Setup = {}) => {
       cost: { usd: 2.14 },
     },
   }))
-  on('command.register', (_: unknown, e: { name: string }) => ({ value: { command: e.name } }))
   on('classic.SessionStart', () => ({}))
   on('tool.check', () => ({ decision: 'ask' }))
   on('tool.call', () => ({ result: {}, isError: true }))
@@ -44,10 +36,6 @@ const start = async ($: any, on: any, s: Setup = {}) => {
   on('ui.toast', (_: unknown, e: { text: string }) => {
     s.toasts?.push(e.text)
     return { value: {} }
-  })
-  on('ui.open', (_: unknown, e: { id: string }) => {
-    s.opened?.push(e.id)
-    return { value: { isPlaced: true } }
   })
   await $.session.start({ surface: 'terminal', isInteractive: true, cwd: '/work' })
   return clock
@@ -67,7 +55,7 @@ test('five minutes before the cache goes cold the band warns, Pip gets drowsy, a
   await resume($, 54)
 
   let b = await band($)
-  expect(await b.find({ text: ' 6m left' })).toBeDefined()
+  expect(await b.find({ text: ' 6m left · holds 245k' })).toBeDefined()
   expect(await pip(b)).toEqual(['Pip, idle'])
   await b.unmount()
 
@@ -75,7 +63,7 @@ test('five minutes before the cache goes cold the band warns, Pip gets drowsy, a
   expect(toasts.length).toBe(1)
   expect(toasts[0]).toContain('goes cold in 5m')
   b = await band($)
-  expect(await b.find({ text: ' 4m left' })).toBeDefined()
+  expect(await b.find({ text: ' 4m left · holds 245k' })).toBeDefined()
   expect(await pip(b)).toEqual(['Pip, drowsy'])
   await b.unmount()
 })
@@ -86,6 +74,15 @@ test('the warning toast can be turned off', { options: { coldWarning: false } },
   await resume($, 54)
   await clock.advance(61_000)
   expect(toasts).toEqual([])
+})
+
+test('a warm cache says how much it holds, which a cold one re-sends', async ($, on) => {
+  await start($, on)
+  await resume($, 18, 352000)
+
+  const b = await band($)
+  expect(await b.find({ text: ' 42m left · holds 352k' })).toBeDefined()
+  await b.unmount()
 })
 
 test('a cold cache says how much the next message re-sends', async ($, on) => {
@@ -160,33 +157,4 @@ test('Pip hops when a long turn finishes', async ($, on) => {
   const b = await band($)
   expect(await pip(b)).toEqual(['Pip, hop'])
   await b.unmount()
-})
-
-test('Details opens the pane, which lays out cost, cache, context, limits and turns', async ($, on) => {
-  const opened: string[] = []
-  await start($, on, { opened, percent: 72 })
-  await resume($, 18)
-
-  const b = await band($)
-  await b.press({ key: 'pulse-details' })
-  expect(opened).toEqual(['pulse'])
-  await b.unmount()
-
-  const pane = await $.ui.mount(PANE)
-  for (const text of ['SESSION', 'PROMPT CACHE', 'CONTEXT', 'USAGE LIMITS', 'RECENT TURNS']) {
-    expect(await pane.find({ text })).toBeDefined()
-  }
-  expect(await pane.find({ text: 'WARM · cold in 42m' })).toBeDefined()
-  expect(await pane.find({ text: '1 hour (subscription)' })).toBeDefined()
-  expect(await pane.find({ text: '72% of 200k' })).toBeDefined()
-  expect(await pane.find({ text: '12% left · resets 1h 40m' })).toBeDefined()
-  await pane.unmount()
-})
-
-test('/pulse opens the pane too', async ($, on) => {
-  const opened: string[] = []
-  await start($, on, { opened })
-  const r = await $.command.run({ command: 'pulse', args: '' } as any)
-  expect(opened).toEqual(['pulse'])
-  expect(r.text).toBe('Pulse details opened.')
 })

@@ -12,14 +12,6 @@ export const fmtSpan = (ms: number): string => {
   return `${Math.floor(hours / 24)}d ${hours % 24}h`
 }
 
-/** A turn's length: `45s`, `2m 10s`, then as fmtSpan. */
-export const fmtDuration = (ms: number): string => {
-  const secs = Math.round(Math.max(0, ms) / 1000)
-  if (secs < 60) return `${secs}s`
-  if (secs < 3600) return `${Math.floor(secs / 60)}m ${secs % 60}s`
-  return fmtSpan(ms)
-}
-
 /** Tokens: `850`, `245k`, `1.2M`. */
 export const tok = (n: number): string =>
   n >= 1e6 ? `${Number((n / 1e6).toFixed(1))}M` : n >= 1000 ? `${Math.round(n / 1000)}k` : String(n)

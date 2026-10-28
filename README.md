@@ -3,24 +3,21 @@
 A Claude Code mod that adds a slim band above your prompt:
 
 ```
-✻ SESSION  $2.14 / $10.00 · $1.69/h · 1h 16m   ● WARM 42m left   ctx 72%   5H 12% left · resets 1h 40m   [Details]
+✻ SESSION  $2.14 / $10.00 · $1.69/h · 1h 16m   ● WARM 42m left · holds 352k   ctx 72%   5H 12% left · resets 1h 40m
 ```
 
 - **Cost so far**, as `/cost` totals it, and the **spend rate** once the session
   has run 10 minutes. Set a **budget** and the cost turns amber at 80% and red past it.
 - **Running time.** `/clear` starts it over.
-- **Prompt cache, warm or cold.** `WARM 42m left` while your next message reads the
-  cache cheaply. It turns amber 5 minutes before it expires, with an optional toast.
-  `COLD idle 3h 5m · re-sends 245k` once it has expired, with how many tokens the
-  next message sends again.
+- **Prompt cache, warm or cold.** `WARM 42m left · holds 352k` while your next message
+  reads the cache cheaply: the tokens it holds are what a cold message sends again.
+  It turns amber 5 minutes before it expires, with an optional toast.
+  `COLD idle 3h 5m · re-sends 352k` once it has expired.
 - **Context fill**, from 60%: amber at 80%, red at 90%.
 - **Usage windows** (5-hour, 7-day) only once one has less than 20% left, with its reset.
 - **Pip**, a little pixel critter: idles, works while Claude runs, gets drowsy as the
   cache is about to expire, sleeps when it is cold, looks up with a `!` while a
   permission is asked, hops after a turn of a minute or more, and wobbles when a tool fails.
-- **Details** (or `/pulse`) opens a pane with all of it: cost, rate, budget, cache
-  state and TTL, re-caches, context, every usage window and the recent turns with
-  what each cost.
 
 The cache lasts an hour on a Claude subscription and five minutes on an API key,
 as Claude Code picks by default. After a model switch it uses the TTL the engine
