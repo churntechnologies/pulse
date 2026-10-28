@@ -47,7 +47,8 @@ const resume = ($: any, idleMin: number, tokens = 245000) =>
 const band = ($: any, props: object = PROPS) =>
   $.ui.mount({ plugin: 'pulse', surface: 'desktop', component: 'AbovePrompt', props })
 
-const pip = async (b: any) => (await b.findAll({ type: 'Svg' })).map((s: any) => s.props.alt)
+const alts = async (b: any): Promise<string[]> => (await b.findAll({ type: 'Svg' })).map((s: any) => s.props.alt)
+const pip = async (b: any) => (await alts(b)).filter(a => a.startsWith('Pip'))
 
 test('five minutes before the cache goes cold the band warns, Pip gets drowsy, and a toast says so', async ($, on) => {
   const toasts: string[] = []
@@ -65,6 +66,7 @@ test('five minutes before the cache goes cold the band warns, Pip gets drowsy, a
   b = await band($)
   expect(await b.find({ text: ' 4m left · holds 245k' })).toBeDefined()
   expect(await pip(b)).toEqual(['Pip, drowsy'])
+  expect(await alts(b)).toContain('Cache closing')
   await b.unmount()
 })
 

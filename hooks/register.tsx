@@ -3,6 +3,8 @@ import type { EngineInterface, Register, SessionContextUsage, SessionRateLimit, 
 
 import type { CacheFacts, ContextFill, Figures, Limit, Reaction, Ttl } from '../types'
 import { fmtSpan, fmtUntil, leftOf, limitName, tok, usd } from './format'
+import { ICON_SIZE, cacheIconSvg } from './cache-icon'
+import type { Heat } from './cache-icon'
 import { PIP_SIZE, pipSvg } from './pip'
 import type { Mood } from './pip'
 
@@ -257,9 +259,16 @@ export const register: Register = (on, options) => {
       )
         .filter(Boolean)
         .join(' · ')
+      const heat: Heat = isWarm ? (isClosing ? 'closing' : 'warm') : 'cold'
       readout = (
-        <Box key="cache" flexDirection="row" flexShrink={0} marginRight={3}>
-          <Text color={hue}>● </Text>
+        <Box key="cache" flexDirection="row" flexShrink={0} marginLeft={2} alignItems="center">
+          {Svg ? (
+            <Box flexShrink={0} marginRight={1} alignItems="center">
+              <Svg source={cacheIconSvg(heat)} alt={`Cache ${heat}`} width={ICON_SIZE} height={ICON_SIZE} isInteractive />
+            </Box>
+          ) : (
+            <Text color={hue}>● </Text>
+          )}
           <Text color={hue} bold>{isWarm ? 'WARM' : 'COLD'}</Text>
           {detail ? <Text color="inactive" tabular>{` ${detail}`}</Text> : null}
         </Box>
@@ -288,15 +297,16 @@ export const register: Register = (on, options) => {
       )
     })
 
+    // The session and its meters on the left, the cache on the right.
     return (
       <Box flexDirection="row" paddingX={1} alignItems="center">
         {pip}
         <Box flexDirection="row" flexWrap="wrap" flexGrow={1} alignItems="center">
           {session}
-          {readout}
           {fill}
           {windows}
         </Box>
+        {readout}
       </Box>
     )
   })

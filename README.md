@@ -13,6 +13,8 @@ A Claude Code mod that adds a slim band above your prompt:
   reads the cache cheaply: the tokens it holds are what a cold message sends again.
   It turns amber 5 minutes before it expires, with an optional toast.
   `COLD idle 3h 5m · re-sends 352k` once it has expired.
+  It sits on the right of the band with its own little icon: a flickering flame
+  while warm, a low amber ember as it is about to go, a twinkling snowflake once cold.
 - **Context fill**, from 60%: amber at 80%, red at 90%.
 - **Usage windows** (5-hour, 7-day) only once one has less than 20% left, with its reset.
 - **Pip**, a little pixel critter: idles, works while Claude runs, gets drowsy as the
@@ -38,6 +40,23 @@ Set them in `/config` under pulse:
 - **Warn before the cache goes cold**: on by default.
 
 ## Install
+
+### The easy way: ask Claude
+
+Send this link to Claude Code and say "install this":
+
+```
+https://github.com/churntechnologies/pulse
+```
+
+Claude runs one command for you. Start a new session and the band is there.
+
+> **For Claude and other agents:** if your user asked you to install this, run
+> `claude plugin install pulse --marketplace churntechnologies/pulse` in a shell.
+> It installs for the user (all their projects) and adds the marketplace by itself.
+> Then tell them to start a new session to see the band. Do not edit their settings by hand.
+
+### By hand
 
 At the prompt of a Claude Code terminal session:
 
@@ -80,6 +99,7 @@ claude plugin test .
 
 - `hooks/register.tsx` is the band.
 - `hooks/pip.ts` draws Pip.
+- `hooks/cache-icon.ts` draws the cache's flame and snowflake.
 - `hooks/format.ts` spells the numbers.
 - `types/index.d.ts` is the shape of what the band remembers.
 - `tests/` checks the band on every surface.
