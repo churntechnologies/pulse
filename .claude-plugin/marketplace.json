@@ -1,0 +1,12 @@
+{
+  "name": "pulse",
+  "owner": { "name": "Nemat" },
+  "description": "Nemat's Claude Code mods.",
+  "plugins": [
+    {
+      "name": "pulse",
+      "source": "./",
+      "description": "A slim band above the prompt: what this session has cost, how long it has run, and whether the prompt cache is warm or cold."
+    }
+  ]
+}

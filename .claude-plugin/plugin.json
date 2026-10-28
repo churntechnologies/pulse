@@ -1,0 +1,32 @@
+{
+  "name": "pulse",
+  "version": "0.3.0",
+  "description": "A slim band above the prompt: session cost, spend rate and budget, running time, warm or cold prompt cache, context fill and low usage limits, with Pip and a details pane.",
+  "author": {
+    "name": "Nemat"
+  },
+  "license": "MIT",
+  "keywords": [
+    "cost",
+    "session",
+    "time",
+    "status",
+    "mod",
+    "claude-code"
+  ],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "budget": {
+      "type": "number",
+      "title": "Session budget (USD)",
+      "description": "The cost turns amber at 80% of it and red past it. 0 leaves it off.",
+      "default": 0
+    },
+    "coldWarning": {
+      "type": "boolean",
+      "title": "Warn before the cache goes cold",
+      "description": "A toast 5 minutes before an hour-long cache expires, 1 minute before a 5-minute one.",
+      "default": true
+    }
+  }
+}
